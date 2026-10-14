@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Gauntlet: Alien Invasion Interactive Story</title>
+    <style>
+        :root {
+            --bg-color: #05080c;
+            --panel-bg: #0d1520;
+            --border-color: #1e354d;
+            --text-main: #c4d1ec;
+            --accent-cyan: #00ffcc;
+            --accent-magenta: #ff0077;
+            --warning-orange: #ff9900;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Grid Alert */
+        header {
+            background-color: var(--panel-bg);
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .ticker-container {
+            flex-grow: 1;
+            margin-left: 40px;
+            overflow: hidden;
+            white-space: nowrap;
+            background: #020407;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+        }
+
+        #global-ticker {
+            display: inline-block;
+            color: var(--accent-magenta);
+            animation: scroll-text 25s linear infinite;
+        }
+
+        @keyframes scroll-text {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Main App Grid UI Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Base Panel Styling */
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        h3 {
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* Column 1 Layout: Gauntlet Statistics Tracker */
+        .stat-box {
+            background: #020407;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b84a6;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-top: 4px;
+        }
+
+        .stat-value.highlight {
+            color: var(--warning-orange);
+        }
+
+        /* Key Assembly Fragments Graphic Visualizer */
+        .key-matrix {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .fragment-slot {
+            width: 40px;
+            height: 40px;
+            border: 2px dashed #304e72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #304e72;
+            transition: all 0.3s ease;
+        }
+
+        .fragment-slot.active {
+            border: 2px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+            text-shadow: 0 0 4px var(--accent-cyan);
+        }
+
+        /* Column 2 Layout: Dynamic Core Narrative Context Engine */
+        #story-panel {
+            background-color: #020508;
+            border-left: none;
+            border-right: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px;
+        }
+
+        #story-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            white-space: pre-line;
+        }
+
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px 20px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            background-color: #111d2d;
+        }
+
+        /* Column 3 Layout: Navigation & Digital Backpack Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .inventory-slot {
+            background-color: #020407;
+            border: 1px solid var(--border-color);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 4px;
+            color: #6b84a6;
+        }
+
+        .inventory-slot.occupied {
+            color: var(--text-main);
+            border-color: #3b5e85;
+            background: #0f1c2c;
+        }
+
+        .log-feed {
+            background-color: #020407;
+            border: 1px solid var(--border-color);
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 0.75rem;
+            overflow-y: auto;
+            color: #8da2c4;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            border-bottom: 1px solid #0d1520;
+            padding-bottom: 4px;
+        }
+
+        .log-time {
+            color: var(--accent-magenta);
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Status Header Area Bar Layout -->
+    <header>
+        <div class="logo">SYSTEM//GAUNTLET_OS</div>
+        <div class="ticker-container">
+            <div id="global-ticker">BROADCAST INTERCEPT: OVERSEER SHIP IN ORBIT MONITORING ACTIVE TRIALS...</div>
+        </div>
+    </header>
+
+    <!-- Master Interactive Layout Engine Container Matrix -->
+    <div class="main-container">
+
+        <!-- Column One: Left Panel Tracker Stats Interface -->
+        <div class="panel">
+            <h3>Competitor Metrics</h3>
+            <div class="stat-box">
+                <div class="stat-label">Surviving Humans</div>
+                <div id="competitor-count" class="stat-value highlight">100 / 100</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">Rations Count</div>
+                <div id="rations-count" class="stat-value">5 Units</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">Overseer Entertainment Rating</div>
+                <div id="entertainment-score" class="stat-value" style="color: var(--accent-magenta);">Low</div>
+            </div>
+
+            <h3 style="margin-top: 15px;">Key Assembly Terminal</h3>
+            <div class="key-matrix">
+                <div id="frag-1" class="fragment-slot">Ⅰ</div>
+                <div id="frag-2" class="fragment-slot">Ⅱ</div>
+                <div id="frag-3" class="fragment-slot">Ⅲ</div>
+                <div id="frag-4" class="fragment-slot">Ⅳ</div>
+                <div id="frag-5" class="fragment-slot">Ⅴ</div>
+            </div>
+        </div>
+
+        <!-- Column Two: Center Render Core Engine Narrative Text Node Output Box Layout -->
+        <div id="story-panel" class="panel">
+            <div id="story-text">Loading narrative matrix initialized...</div>
+            <div id="choices-container"></div>
+        </div>
+
+        <!-- Column Three: Right Panel Grid Matrix Backpack Storage Layout Panel -->
+        <div class="panel">
+            <h3>Digital Backpack Grid</h3>
+            <div class="inventory-grid" id="backpack">
+                <div class="inventory-slot occupied">Scavenged Medkit</div>
+                <div class="inventory-slot occupied">Water Filter</div>
+                <div class="inventory-slot">Empty Slot</div>
+                <div class="inventory-slot">Empty Slot</div>
+                <div class="inventory-slot">Empty Slot</div>
+                <div class="inventory-slot">Empty Slot</div>
+            </div>
+
+            <h3>Live Tournament Feed</h3>
+            <div class="log-feed" id="live-feed-log">
+                <div class="log-entry"><span class="log-time">[00:01]</span>Trial initialized. 100 contestants deployed into sector Earth-Prime.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core App Engine JavaScript Interactive Tree Matrix Logic Block Script -->
+    <script>
+        // Global Dynamic Game Engine Data Matrix Representation Models Object State variables
+        const gameState = {
+            competitors: 100,
+            rations: 5,
+            entertainment: 'Low',
+            fragments: [false, false, false, false, false],
+            inventory: ['Scavenged Medkit', 'Water Filter', 'Empty Slot', 'Empty Slot', 'Empty Slot', 'Empty Slot'],
+            timeElapsed: 2
+        };
+
